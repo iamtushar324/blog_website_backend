@@ -26,17 +26,19 @@ const users = db.define('users', {
         allowNull: false
 
     },
+
+    "token": {
+        type: Seq.TEXT,
+        allowNull: false
+    },
+
+
     "bio": {
         type: Seq.STRING(100),
 
     },
     "image": {
         type: Seq.STRING(200)
-    }
-    ,
-    token: {
-        type: Seq.STRING(50),
-        allowNull: false
     }
 
 

@@ -9,7 +9,7 @@ function random_gen(digit) {
         ran.push(a.charAt(x))
     }
     let str = ran.join('')
-    console.log(str)
+    return str
 }
 
 module.exports = { random_gen }

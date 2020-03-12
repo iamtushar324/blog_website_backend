@@ -14,11 +14,13 @@ app.use('/api', apiRoute)
 
 
 
-db.sync().then(() => {
+db.sync({ force: true }).then(() => {
 
     app.listen(3333, () => {
         console.log("Server started")
     })
+
+
 
 
 })
