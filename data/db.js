@@ -33,6 +33,11 @@ const users = db.define('users', {
     "image": {
         type: Seq.STRING(200)
     }
+    ,
+    token: {
+        type: Seq.STRING(50),
+        allowNull: false
+    }
 
 
 })

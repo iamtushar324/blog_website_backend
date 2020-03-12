@@ -3,7 +3,16 @@ const app = exp()
 const { db, users, articles } = require('./data/db')
 const apiRoute = require('./routes/api').route
 
+
+app.use(exp.json())
+app.use(exp.urlencoded())
 app.use('/api', apiRoute)
+
+
+
+
+
+
 
 db.sync().then(() => {
 
@@ -11,15 +20,5 @@ db.sync().then(() => {
         console.log("Server started")
     })
 
-    const user = users.create({
-        email: "iamtushf",
-        username: "djjdjd",
-        password: "djfdsj"
-    })
 
-
-    const art = articles.create({
-        title: "iamtushf",
-
-    })
 })

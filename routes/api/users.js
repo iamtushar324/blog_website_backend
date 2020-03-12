@@ -1,8 +1,9 @@
 const route = require('express').Router()
 
 
-route.get('/', (req, res) => {
-    res.send('heloe users')
+route.post('/', (req, res) => {
+    console.log(req.body.user)
+    res.send("done")
 })
 
 
