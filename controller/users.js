@@ -30,4 +30,6 @@ async function createNewUser(email, username, password) {
 
 }
 
+
+
 module.exports = { createNewUser }
