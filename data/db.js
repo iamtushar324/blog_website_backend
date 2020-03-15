@@ -13,12 +13,15 @@ const users = db.define('users', {
     "email": {
         type: Seq.STRING(40),
         priamaryKey: true,
-        allowNull: false
+        allowNull: false,
+        unique: true
 
     },
     "username": {
         type: Seq.STRING(40),
-        allowNull: false
+        allowNull: false,
+        unique: true
+
     },
 
     "password": {
@@ -29,7 +32,9 @@ const users = db.define('users', {
 
     "token": {
         type: Seq.TEXT,
-        allowNull: false
+        allowNull: false,
+
+
     },
 
 

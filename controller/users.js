@@ -17,10 +17,18 @@ async function createNewUser(email, username, password) {
     }).then((user) => {
         console.log("New user created")
         newUser = user.dataValues
+        newUser = { user: newUser }
 
     })
         .catch(() => {
             console.log("unble to create new user")
+            newUser = {
+                "errors": {
+                    "body": [
+                        "user can not be created"
+                    ]
+                }
+            }
         })
 
     return newUser

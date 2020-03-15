@@ -1,18 +1,20 @@
 const route = require('express').Router()
 const { users } = require('../../data/db')
+const { checkBeforeReg } = require('../../middlewares/checkingBeforeRegister')
+const { auth } = require('../../middlewares/auth')
+
 
 const { createNewUser, findUser } = require('../../controller/users')
-const { promisify } = require('util')
 
-route.post('/', async (req, res) => {
+
+route.post('/', checkBeforeReg, async (req, res) => {
     let userr = req.body.user
-    console.log(req.body)
-    console.log(userr)
+
 
     let newuser = await createNewUser(userr.email, userr.username, userr.password)
-    JSON.stringify(newuser)
 
-    res.send({ user: newuser })
+
+    res.send(newuser)
 })
 
 
