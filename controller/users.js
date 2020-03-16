@@ -17,7 +17,16 @@ async function createNewUser(email, username, password) {
     }).then((user) => {
         console.log("New user created")
         newUser = user.dataValues
-        newUser = { user: newUser }
+        newUser = {
+            user: {
+                "email": newUser.email,
+                "token": newUser.token,
+                "username": newUser.username,
+                "bio": newUser.bio,
+                "image": newUser.image
+            }
+        }
+
 
     })
         .catch(() => {

@@ -40,19 +40,31 @@ const users = db.define('users', {
 
     "bio": {
         type: Seq.STRING(100),
+        defaultValue: null
 
     },
     "image": {
-        type: Seq.STRING(200)
+        type: Seq.STRING(200),
+        defaultValue: null
+
     }
 
 
-})
+}, { timestamp: false })
 
 const articles = db.define('articles', {
+
+    "slug": {
+        type: Seq.STRING(100),
+        allowNull: false,
+        unique: true
+    },
+
+
     "title": {
-        type: Seq.STRING(50),
-        allowNull: false
+        type: Seq.STRING(100),
+        allowNull: false,
+        unique: true
     },
     "description": {
         type: Seq.STRING(50),
@@ -62,6 +74,15 @@ const articles = db.define('articles', {
         type: Seq.TEXT,
 
     },
+    "tagList": {
+        type: Seq.TEXT,
+        get() {
+            return this.getDataValue('tagList').split(';')
+        },
+        set(val) {
+            this.setDataValue('tagList', val.join(';'));
+        },
+    }
 
 
 })

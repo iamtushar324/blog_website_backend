@@ -1,19 +1,20 @@
 const { users } = require('../data/db')
 
-function auth(req, res, next) {
+async function auth(req, res, next) {
     let token = req.headers['authorization']
     toString(token)
-    console.log(token)
+
     if (token && token.startsWith('Token ')) {
         let tokenValue = token.slice(6, token.length)
-        let authUser = users.findOne({
+        let authUser = await users.findOne({
             where: {
                 token: tokenValue
             }
         })
             .then((ans) => {
                 if (ans) {
-                    res.send("yes")
+
+
                     next()
                 }
                 else {
