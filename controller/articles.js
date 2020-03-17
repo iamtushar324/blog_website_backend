@@ -36,14 +36,14 @@ async function createNewArticle(title, description, tagList, body, authorId, use
             }
         })
         .catch((ar) => {
-            console.log(ar)
-            //         `{
-            //         "errors": {
-            //         "body": [
-            //             "title already exist"
-            //         ]
-            //     }
-            // }`
+
+            art = `{
+                    "errors": {
+                    "body": [
+                        "title already exist"
+                    ]
+                }
+            }`
 
         })
 
@@ -128,6 +128,46 @@ async function getLatestArticles(tags) {
 }
 
 
+async function findArtByUser(userId) {
+
+    let artArray = []
+
+    let arti = await articles.findAll({
+
+        where: {
+
+            authorId: userId
+
+        },
+        include: { model: users, as: "author" }
+
+    }).then((a) => {
+        artArray = a
+    })
+        .catch(() => {
+            console.log("unable to find articles")
+        })
 
 
-module.exports = { createNewArticle, findArticle, getLatestArticles }
+    return artArray
+
+
+}
+
+async function findArtBySlug(slug) {
+
+    let article = await articles.findOne({
+        where: {
+            slug: slug
+        }
+    })
+    return article
+
+
+
+}
+
+
+
+
+module.exports = { createNewArticle, findArticle, getLatestArticles, findArtByUser, findArtBySlug }

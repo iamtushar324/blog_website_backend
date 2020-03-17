@@ -47,7 +47,23 @@ const users = db.define('users', {
         type: Seq.STRING(200),
         defaultValue: null
 
+    },
+
+    "following": {
+        type: Seq.TEXT,
+
+        get() {
+            return this.getDataValue('following').split(';')
+        },
+        set(val) {
+            this.setDataValue('following', val.join(';'));
+        },
+
+        defaultValue: []
+
     }
+
+
 
 
 }, { timestamp: false })
@@ -82,11 +98,42 @@ const articles = db.define('articles', {
         set(val) {
             this.setDataValue('tagList', val.join(';'));
         },
+    },
+    "comments": {
+        type: Seq.TEXT,
+        get() {
+            return this.getDataValue('comments').split(';')
+        },
+        set(val) {
+            this.setDataValue('comments', val.join(';'));
+        },
     }
 
 
 })
 
+
+const comments = db.define('comments', {
+
+    body: {
+        type: Seq.STRING(100),
+        allowNull: false
+    },
+
+    articleId: {
+        type: Seq.INTEGER,
+        allowNull: false,
+
+    }
+
+
+
+})
+
+
+
+comments.belongsTo(users, { as: "author" })
+
 articles.belongsTo(users, { as: "author" })
 
-module.exports = { db, users, articles }
+module.exports = { db, users, articles, comments }

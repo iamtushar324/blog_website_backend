@@ -14,6 +14,7 @@ async function createNewUser(email, username, password) {
         username: username,
         password: password,
         token: tok,
+        following: []
     }).then((user) => {
         console.log("New user created")
         newUser = user.dataValues
