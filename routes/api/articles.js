@@ -12,7 +12,6 @@ const { createComment, findComments, findComntWithId } = require('../../controll
 
 
 route.get('/', async (req, res) => {
-    console.log(req.query)
     const articlesArray = await getLatestArticles(req.query)
 
     let MultiArticle = []
@@ -73,35 +72,58 @@ route.post('/', auth, async (req, res) => {
 
 })
 
-route.put('/', auth, async (req, res) => {
+route.put('/:slug', auth, async (req, res) => {
 
-    let user = await getUserObj(req, res)
+    let user = await getUserObj(req, res).catch((err) => {
+        res.send(err)
+    })
+    try {
+        let article = await findArticle(req.params.slug, user.id).catch((err) => {
+            res.send(err)
+        })
 
-    let article = await findArticle(req.query.slug, user.id)
+        let upArt = req.body.article
 
-    let upArt = req.body.article
 
-    if (article) {
+        if (article) {
 
-        if (upArt.title) {
-            article.title = upArt.title
-            article.slug = slugify(upArt.title)
+            if (upArt.title) {
+                article.title = upArt.title
+                article.slug = slugify(upArt.title)
+            }
+            if (upArt.body) {
+                article.body = upArt.body
+            }
+            if (upArt.description) {
+                article.description = upArt.description
+            }
+
+            await article.save()
+
+
+            res.send({
+                "article": {
+                    "slug": article.slug,
+                    "title": article.title,
+                    "description": article.description,
+                    "body": article.body,
+                    "tagList": article.tagList,
+                    "createdAt": article.createdAt,
+                    "updatedAt": article.updatedAt,
+                    "favorited": isFav(article.favByUser, user.id),
+                    "favoritesCount": article.favByUser.length,
+                    "author": {
+                        "username": article.author.username,
+                        "bio": article.author.bio,
+                        "image": article.author.image,
+                        "following": isFollowing(user.following, article.authorId)
+                    }
+                }
+            })
+
         }
-        if (upArt.body) {
-            article.body = upArt.body
-        }
-        if (upArt.description) {
-            article.description = upArt.description
-        }
-
-        await article.save()
-
-
-        res.send(article)
-
-    }
-    else {
-        res.send(`
+        else {
+            res.send(`
         {
             "errors": {
                 "body": [
@@ -110,9 +132,13 @@ route.put('/', auth, async (req, res) => {
             }
         }
         `)
+        }
+
     }
 
-
+    catch (err) {
+        res.send(err)
+    }
 
 
 
@@ -120,11 +146,11 @@ route.put('/', auth, async (req, res) => {
 })
 
 
-route.delete('/', auth, async (req, res) => {
+route.delete('/:slug', auth, async (req, res) => {
 
     let user = await getUserObj(req, res)
 
-    let article = await findArticle(req.query.slug, user.id)
+    let article = await findArticle(req.params.slug, user.id)
 
     if (article) {
         await article.destroy()
@@ -276,12 +302,11 @@ route.delete('/:slug/comments/:id', auth, async (req, res) => {
 
     let currentUser = await getUserObj(req, res)
 
-    console.log(currentUser.id)
+
 
     if (currentUser.id == comment.authorId) {
         comment.destroy()
         await comment.save()
-        console.log(comment.id + " is  deleted by " + currentUser.id)
         res.send("done")
 
     }
@@ -306,23 +331,183 @@ route.post('/:slug/favorite', auth, async (req, res) => {
 
     let currentUser = await getUserObj(req, res)
 
-    let articleId = await findArtBySlug(req.params.slug)
+    let article = await findArtBySlug(req.params.slug)
 
+
+    let favByuserlist = article.favByUser
+
+    let found = favByuserlist.find((r) => { return (r == currentUser.id) })
+
+
+    if (found);
+
+    else favByuserlist.push(currentUser.id)
+
+    article.favByUser = favByuserlist
+
+    await article.save()
 
     let favList = currentUser.favArt
 
-    favList.push(articleId.id)
+    favList.push(article.id)
 
     currentUser.favArt = favList
 
     await currentUser.save()
 
-    res.send(currentUser)
+    res.send({
+        "article": {
+            "slug": article.slug,
+            "title": article.title,
+            "description": article.description,
+            "body": article.body,
+            "tagList": article.tagList,
+            "createdAt": article.createdAt,
+            "updatedAt": article.updatedAt,
+            "favorited": isFav(article.favByUser, currentUser.id),
+            "favoritesCount": article.favByUser.length,
+            "author": {
+                "username": article.author.username,
+                "bio": article.author.bio,
+                "image": article.author.image,
+                "following": isFollowing(currentUser.following, article.authorId)
+            }
+        }
+    })
 
 
 
 
 })
+
+
+route.delete('/:slug/favorite', auth, async (req, res) => {
+
+    let currentUser = await getUserObj(req, res)
+
+    let article = await findArtBySlug(req.params.slug)
+
+
+    let favByuserlist = article.favByUser
+    favByuserlist = favByuserlist.filter((Id) => {
+
+        if (Id == currentUser.id) return false;
+        else return true;
+    })
+    article.favByUser = favByuserlist
+    await article.save()
+
+    let favList = currentUser.favArt
+
+    favList.push(article.id)
+
+    currentUser.favArt = favList
+
+    await currentUser.save()
+
+    res.send({
+        "article": {
+            "slug": article.slug,
+            "title": article.title,
+            "description": article.description,
+            "body": article.body,
+            "tagList": article.tagList,
+            "createdAt": article.createdAt,
+            "updatedAt": article.updatedAt,
+            "favorited": isFav(article.favByUser, currentUser.id),
+            "favoritesCount": article.favByUser.length,
+            "author": {
+                "username": article.author.username,
+                "bio": article.author.bio,
+                "image": article.author.image,
+                "following": isFollowing(currentUser.following, article.authorId)
+            }
+        }
+    })
+
+
+
+
+})
+
+
+
+function isFav(favByUser, userId) {
+    let i = false;
+    for (let p in favByUser) {
+
+        if (p == userId) i = true;
+    }
+    return i;
+}
+
+function isFollowing(userList, author) {
+    let i = false;
+    for (let p in userList) {
+        if (p == author) i = true;
+
+    }
+    return i;
+}
+
+
+route.get('/:slug', async (req, res) => {
+
+    let article = await findArtBySlug(req.params.slug)
+
+    let currentUser = await getUserObj(req, res)
+
+    if (currentUser) {
+
+        res.send({
+            "article": {
+                "slug": article.slug,
+                "title": article.title,
+                "description": article.description,
+                "body": article.body,
+                "tagList": article.tagList,
+                "createdAt": article.createdAt,
+                "updatedAt": article.updatedAt,
+                "favorited": isFav(article.favByUser, currentUser.id),
+                "favoritesCount": article.favByUser.length,
+                "author": {
+                    "username": article.author.username,
+                    "bio": article.author.bio,
+                    "image": article.author.image,
+                    "following": isFollowing(currentUser.following, article.authorId)
+                }
+            }
+        })
+
+    }
+
+    else {
+        res.send({
+            "article": {
+                "slug": article.slug,
+                "title": article.title,
+                "description": article.description,
+                "body": article.body,
+                "tagList": article.tagList,
+                "createdAt": article.createdAt,
+                "updatedAt": article.updatedAt,
+                "favorited": false,
+                "favoritesCount": article.favByUser.length,
+                "author": {
+                    "username": article.author.username,
+                    "bio": article.author.bio,
+                    "image": article.author.image,
+                    "following": false
+                }
+            }
+        })
+    }
+
+
+
+
+})
+
 
 
 

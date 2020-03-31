@@ -11,7 +11,9 @@ async function createNewArticle(title, description, tagList, body, authorId, use
         description,
         tagList,
         body,
-        authorId
+        authorId,
+        comments: [],
+        favByUser: []
     })
         .then((ar) => {
 
@@ -40,7 +42,7 @@ async function createNewArticle(title, description, tagList, body, authorId, use
             art = `{
                     "errors": {
                     "body": [
-                        "title already exist"
+                        ${ar}
                     ]
                 }
             }`
@@ -55,28 +57,20 @@ async function createNewArticle(title, description, tagList, body, authorId, use
 
 
 async function findArticle(slug, authorId) {
-    let art
+
     const article = await articles.findOne({
         where: {
             slug: slug,
             authorId: authorId
-        }
-    }).then((ar) => {
-        art = ar
+        },
+        include: { model: users, as: "author" }
+
+    }).catch((err) => {
+        return err
     })
-        .catch(() => {
-            art = `{
-            "errors": {
-            "body": [
-                "You can not change this article"
-            ]
-        }
-    }`
-
-        })
 
 
-    return art
+    return article
 
 
 }
@@ -86,7 +80,6 @@ async function findArticle(slug, authorId) {
 async function getLatestArticles(tags) {
 
     let artArray
-    console.log(tags)
 
     if (tags.slug) {
 
@@ -98,8 +91,7 @@ async function getLatestArticles(tags) {
             include: { model: users, as: "author" }
 
         }).then((a) => { artArray = a })
-            .catch(() => {
-                console.log("unable to find articles")
+            .catch((err) => {
             })
 
 
@@ -115,7 +107,6 @@ async function getLatestArticles(tags) {
 
         }).then((a) => { artArray = a })
             .catch(() => {
-                console.log("unable to find articles")
             })
     }
 
@@ -145,7 +136,6 @@ async function findArtByUser(userId) {
         artArray = a
     })
         .catch(() => {
-            console.log("unable to find articles")
         })
 
 
@@ -159,31 +149,15 @@ async function findArtBySlug(slug) {
     let article = await articles.findOne({
         where: {
             slug: slug
-        }
-    })
-    return article
-
-
-
-}
-
-async function addToFav(slug, userId) {
-
-    let article = await articles.findOne({
-        where: {
-            slug: slug
         },
         include: { model: users, as: "author" }
     })
-
-    article.favByUser.push(userId)
-
-    await article.save()
-
     return article
 
 
+
 }
+
 
 
 

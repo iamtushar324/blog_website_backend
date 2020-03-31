@@ -113,6 +113,7 @@ const articles = db.define('articles', {
         set(val) {
             this.setDataValue('tagList', val.join(';'));
         },
+        defaultValue: []
     },
     "comments": {
         type: Seq.TEXT,
@@ -122,6 +123,7 @@ const articles = db.define('articles', {
         set(val) {
             this.setDataValue('comments', val.join(';'));
         },
+        defaultValue: []
     },
 
     "favByUser": {
