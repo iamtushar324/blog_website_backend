@@ -167,6 +167,24 @@ async function findArtBySlug(slug) {
 
 }
 
+async function addToFav(slug, userId) {
+
+    let article = await articles.findOne({
+        where: {
+            slug: slug
+        },
+        include: { model: users, as: "author" }
+    })
+
+    article.favByUser.push(userId)
+
+    await article.save()
+
+    return article
+
+
+}
+
 
 
 

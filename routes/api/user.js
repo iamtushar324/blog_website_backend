@@ -8,7 +8,7 @@ async function getUserObj(req, res) {
     let token = req.headers['authorization']
     toString(token)
     let tokenValue = token.slice(6, token.length)
-    let nuser
+
     let User = await users.findOne({
         where: {
             token: tokenValue

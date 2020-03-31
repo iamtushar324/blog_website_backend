@@ -1,9 +1,9 @@
 const route = require('express').Router()
-const { createNewArticle, findArticle, getLatestArticles, findArtByUser, findArtBySlug } = require('../../controller/articles')
+const { createNewArticle, findArticle, getLatestArticles, findArtByUser, findArtBySlug, addToFav } = require('../../controller/articles')
 const { auth } = require('../../middlewares/auth')
 const { getUserObj } = require('./user')
 const { slugify } = require('../../util/slugify')
-const { createComment, findComments } = require('../../controller/comments')
+const { createComment, findComments, findComntWithId } = require('../../controller/comments')
 
 
 
@@ -268,6 +268,61 @@ route.get('/:slug/comments', async (req, res) => {
 
 })
 
+
+
+route.delete('/:slug/comments/:id', auth, async (req, res) => {
+
+    let comment = await findComntWithId(req.params.id)
+
+    let currentUser = await getUserObj(req, res)
+
+    console.log(currentUser.id)
+
+    if (currentUser.id == comment.authorId) {
+        comment.destroy()
+        await comment.save()
+        console.log(comment.id + " is  deleted by " + currentUser.id)
+        res.send("done")
+
+    }
+
+    else {
+        res.send({
+            "errors": {
+                "body": [
+                    "You can not delete this comment"
+                ]
+            }
+        })
+    }
+
+
+
+})
+
+
+
+route.post('/:slug/favorite', auth, async (req, res) => {
+
+    let currentUser = await getUserObj(req, res)
+
+    let articleId = await findArtBySlug(req.params.slug)
+
+
+    let favList = currentUser.favArt
+
+    favList.push(articleId.id)
+
+    currentUser.favArt = favList
+
+    await currentUser.save()
+
+    res.send(currentUser)
+
+
+
+
+})
 
 
 

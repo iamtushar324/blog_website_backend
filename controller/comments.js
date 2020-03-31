@@ -33,4 +33,14 @@ async function findComments(articleId) {
 
 }
 
-module.exports = { createComment, findComments }
+async function findComntWithId(id) {
+    const comment = await comments.findOne({
+        where: {
+            id: id
+        }
+    })
+
+    return comment
+}
+
+module.exports = { createComment, findComments, findComntWithId }

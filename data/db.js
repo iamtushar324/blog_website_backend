@@ -61,7 +61,22 @@ const users = db.define('users', {
 
         defaultValue: []
 
-    }
+    },
+
+
+    "favArt": {
+        type: Seq.TEXT,
+
+        get() {
+            return this.getDataValue('favArt').split(';')
+        },
+        set(val) {
+            this.setDataValue('favArt', val.join(';'));
+        },
+
+        defaultValue: []
+
+    },
 
 
 
@@ -107,7 +122,21 @@ const articles = db.define('articles', {
         set(val) {
             this.setDataValue('comments', val.join(';'));
         },
-    }
+    },
+
+    "favByUser": {
+        type: Seq.TEXT,
+
+        get() {
+            return this.getDataValue('favByUser').split(';')
+        },
+        set(val) {
+            this.setDataValue('favByUser', val.join(';'));
+        },
+
+        defaultValue: []
+
+    },
 
 
 })

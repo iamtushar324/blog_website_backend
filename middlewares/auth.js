@@ -3,7 +3,6 @@ const { users } = require('../data/db')
 async function auth(req, res, next) {
     let token = req.headers['authorization']
     toString(token)
-    console.log(token)
 
     if (token && token.startsWith('Token ')) {
         let tokenValue = token.slice(6, token.length)
