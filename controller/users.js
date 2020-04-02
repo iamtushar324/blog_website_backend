@@ -15,7 +15,8 @@ async function createNewUser(email, username, password) {
         password: password,
         token: tok,
         following: [],
-        favArt: []
+        favArt: [],
+        image: "https://robohash.org/" + username
     }).then((user) => {
         console.log("New user created")
         newUser = user.dataValues
