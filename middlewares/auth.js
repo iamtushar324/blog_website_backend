@@ -1,39 +1,26 @@
 const { users } = require('../data/db')
 
 async function auth(req, res, next) {
-    let token = req.headers['authorization']
-    toString(token)
 
-    if (token && token.startsWith('Token ')) {
-        let tokenValue = token.slice(6, token.length)
+    let token = false;
+    let authUser = false;
+    if (req.session) { token = req.session.token; }
 
-        let authUser = await users.findOne({
+    if (token) {
+
+
+        authUser = await users.findOne({
             where: {
-                token: tokenValue
+                token: token
             }
         })
-            .then((ans) => {
-                if (ans) {
 
+    }
 
-                    next()
-                }
-                else {
-                    res.send(`{
-                    "errors":{
-                      "body": [
-                        "user not found"
-                      ]
-                    }
-                  }`)
-                }
-            })
-            .catch(() => {
-                console.log("token auth error")
-            })
+    if (authUser) { next() }
 
-
-
+    else {
+        res.send("false")
     }
 
 

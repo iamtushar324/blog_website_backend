@@ -12,17 +12,18 @@ async function checkBeforeReg(req, res, next) {
         }
     })
         .then((u) => {
-            if (!u) { }
-            else {
-                console.log(u)
+            console.log(u)
+
+            if (!!u) {
                 res.send(`{
-                "errors": {
-                    "body": [
-                        "Email already registered "
-                    ]
-                }
-              }`)
+                    "errors": {
+                        "body": [
+                            "Email already registered "
+                        ]
+                    }
+                  }`)
             }
+
         })
         .catch(() => {
             res.send(`{
@@ -42,16 +43,16 @@ async function checkBeforeReg(req, res, next) {
         }
     })
         .then((u) => {
-            if (!u) { }
-            else {
+            if (!!u) {
                 res.send(`{
-            "errors": {
-                "body": [
-                    "User name already exits "
-                ]
+                    "errors": {
+                        "body": [
+                            "User name already exits "
+                        ]
+                    }
+                  }`)
             }
-          }`)
-            }
+
         })
         .catch(() => {
             res.send(`{
@@ -62,6 +63,8 @@ async function checkBeforeReg(req, res, next) {
         }
       }`)
         })
+
+
     next()
 
 }

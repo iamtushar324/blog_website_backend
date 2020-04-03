@@ -5,19 +5,33 @@ const { users } = require('../../data/db')
 
 
 async function getUserObj(req, res) {
-    let token = req.headers['authorization']
-    toString(token)
-    let tokenValue = token.slice(6, token.length)
+    let token = false
+    if (req.session) { token = req.session.token }
 
-    let User = await users.findOne({
-        where: {
-            token: tokenValue
-        }
-    })
 
-    return User
+
+
+    if (token) {
+        let User = await users.findOne({
+            where: {
+                token: token
+            }
+        })
+
+        return User
+    }
+    else return false
 
 }
+
+route.get('/islogin', auth, async (req, res) => {
+    let user = await getUserObj(req, res)
+
+    res.send(user)
+
+})
+
+
 
 
 route.get('/', auth, async (req, res) => {

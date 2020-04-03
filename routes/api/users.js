@@ -2,10 +2,7 @@ const route = require('express').Router()
 const { users } = require('../../data/db')
 const { checkBeforeReg } = require('../../middlewares/checkingBeforeRegister')
 const { auth } = require('../../middlewares/auth')
-
-
 const { createNewUser, findUser } = require('../../controller/users')
-
 
 route.post('/', checkBeforeReg, async (req, res) => {
     let userr = req.body.user
@@ -28,7 +25,11 @@ route.post('/login', async (req, res) => {
         }
     })
         .then((userss) => {
+
             if (userss.password == body.password) {
+                req.session.token = userss.token
+                req.session.save()
+
                 res.send(userss)
             }
             else {
@@ -55,6 +56,9 @@ route.post('/login', async (req, res) => {
             `)
         })
 
+
+
+    return
 
 
 

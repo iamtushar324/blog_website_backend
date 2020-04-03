@@ -2,16 +2,27 @@ const exp = require('express')
 const app = exp()
 const { db, users, articles } = require('./data/db')
 const apiRoute = require('./routes/api').route
-const { auth } = require('./middlewares/auth')
 
+const session = require('express-session')
+
+app.use(
+    session({
+        secret: 'this is a secret password ',
+        resave: false,
+        saveUninitialized: true,
+
+    })
+)
 
 app.use(exp.json())
 app.use('/', exp.static(__dirname + '/public'))
-
 app.use('/api', apiRoute)
 
 
-app.post('/check', auth)
+
+
+
+
 
 
 
