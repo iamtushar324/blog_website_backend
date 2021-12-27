@@ -1,11 +1,12 @@
 const Seq = require('sequelize')
+const dotenv = require("dotenv")
+dotenv.config();
 
 const db = new Seq({
     dialect: "mysql",
     database: "blog_website",
-    username: "blog_website",
-    password: "classmateblog",
-
+    username: process.env.db_username,
+    password: process.env.db_password,
 })
 
 const users = db.define('users', {
